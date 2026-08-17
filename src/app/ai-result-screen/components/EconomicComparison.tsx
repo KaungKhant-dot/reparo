@@ -19,34 +19,49 @@ export default function EconomicComparison({ result }: EconomicComparisonProps) 
       </h3>
 
       {/* Three columns */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-3 gap-2.5 mb-5">
         {/* Repair cost */}
-        <div className="bg-primary/5 rounded-xl p-3 text-center border border-primary/20">
-          <div className="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center mx-auto mb-2">
-            <Wrench size={14} className="text-success" />
+        <div className="bg-primary/5 rounded-xl p-3 text-center border border-primary/20 flex flex-col justify-between min-h-[120px]">
+          <div>
+            <div className="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <Wrench size={14} className="text-success" />
+            </div>
+            <p className="text-[10px] md:text-xs text-muted-foreground font-600 mb-1 leading-normal">
+              {t('ပြင်ဆင်ခ', 'Repair Cost')}
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground font-600 mb-0.5">
-            {t('ပြင်ဆင်ကုန်ကျ', 'Repair Cost')}
+          <p className="text-xs md:text-sm font-800 text-success whitespace-nowrap">
+            K {result.repairCostMMK.toLocaleString()}
           </p>
         </div>
 
         {/* Repaired value */}
-        <div className="bg-muted rounded-xl p-3 text-center">
-          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-            <TrendingUp size={14} className="text-primary" />
+        <div className="bg-muted rounded-xl p-3 text-center flex flex-col justify-between min-h-[120px]">
+          <div>
+            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <TrendingUp size={14} className="text-primary" />
+            </div>
+            <p className="text-[10px] md:text-xs text-muted-foreground font-600 mb-1 leading-normal">
+              {t('ပြင်ပြီးတန်ဖိုး', 'Repaired Value')}
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground font-600 mb-0.5">
-            {t('ပြင်ဆင်ပြီး တန်ဖိုး', 'Repaired Value')}
+          <p className="text-xs md:text-sm font-800 text-foreground whitespace-nowrap">
+            K {result.repairedValueMMK.toLocaleString()}
           </p>
         </div>
 
         {/* Replacement */}
-        <div className="bg-error/5 rounded-xl p-3 text-center border border-error/20">
-          <div className="w-8 h-8 bg-error/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-            <ShoppingCart size={14} className="text-error" />
+        <div className="bg-error/5 rounded-xl p-3 text-center border border-error/20 flex flex-col justify-between min-h-[120px]">
+          <div>
+            <div className="w-8 h-8 bg-error/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+              <ShoppingCart size={14} className="text-error" />
+            </div>
+            <p className="text-[10px] md:text-xs text-muted-foreground font-600 mb-1 leading-normal">
+              {t('အသစ်ဝယ်ယူခ', 'Replacement')}
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground font-600 mb-0.5">
-            {t('အသစ်ဝယ်ရင်', 'Replacement')}
+          <p className="text-xs md:text-sm font-800 text-error whitespace-nowrap">
+            K {result.replacementCostMMK.toLocaleString()}
           </p>
         </div>
       </div>

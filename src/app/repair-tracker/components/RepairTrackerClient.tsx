@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import {
   CheckCircle2, Circle, Clock, MapPin, Star, Shield,
   Bike, Wrench, Package, ChevronRight, Phone, ArrowRight,
-  RefreshCw
+  RefreshCw, User
 } from 'lucide-react';
 import Link from 'next/link';
 import { DEMO_RIDER, buildStagesAtStatus, TrackingStatus } from '@/lib/tracking-mock';
@@ -88,12 +88,13 @@ export default function RepairTrackerClient() {
       <div className="max-w-2xl mx-auto space-y-4">
 
         {/* Header */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h1 className="text-xl font-800 text-foreground">
+            <h1 className="text-xl font-800 text-foreground leading-relaxed">
               {t('သင့်ပြင်ဆင်မှု', 'Your Repair')}
             </h1>
-            <p className="text-sm text-muted-foreground font-500">
+            <p className="text-sm text-muted-foreground font-500 leading-normal">
               {t('တိုက်ရိုက် ခြေရာခံနေသည်', 'Live tracking')} · #{trackingId}
             </p>
           </div>
@@ -130,77 +131,92 @@ export default function RepairTrackerClient() {
               {t('ဆိုင်ကယ်သမား တည်နေရာ', 'Rider Location')}
             </span>
             {currentStatusIdx >= 1 && currentStatusIdx < 7 && (
-              <span className="ml-auto text-xs font-600 text-muted-foreground">
-                ETA: {currentStatusIdx <= 2 ? '12 min' : currentStatusIdx <= 4 ? '~2 hrs' : '15 min'}
+              <span className="ml-auto text-xs font-750 text-muted-foreground">
+                {t(
+                  currentStatusIdx <= 2 ? 'ကြာချိန်: ၁၂ မိနစ်' : currentStatusIdx <= 4 ? 'ကြာချိန်: ~၂ နာရီ' : 'ကြာချိန်: ၁၅ မိနစ်',
+                  `ETA: ${currentStatusIdx <= 2 ? '12 min' : currentStatusIdx <= 4 ? '~2 hrs' : '15 min'}`
+                )}
               </span>
             )}
           </div>
 
           {/* Map visual */}
-          <div className="relative bg-gradient-to-br from-sky-50 to-emerald-50 rounded-xl h-40 overflow-hidden border border-border">
-            {/* Road */}
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-300/60 -translate-y-1/2" />
-            <div className="absolute top-1/2 left-0 right-0 h-px bg-white/80 -translate-y-1/2 border-dashed" />
+          <div className="relative bg-zinc-50 rounded-2xl h-44 overflow-hidden border border-border/80 shadow-inner">
+            {/* Winding Road SVG */}
+            <svg className="absolute inset-0 w-full h-full text-slate-200" fill="none" preserveAspectRatio="none" viewBox="0 0 400 176">
+              <path d="M 30,88 C 120,40 180,136 270,88 T 370,88" stroke="currentColor" strokeWidth="12" strokeLinecap="round" />
+              <path d="M 30,88 C 120,40 180,136 270,88 T 370,88" stroke="white" strokeWidth="2" strokeDasharray="6,6" strokeLinecap="round" />
+            </svg>
 
             {/* Customer pin */}
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-md">
-                <span className="text-white text-xs font-800">{t('သင်', 'You')}</span>
+            <div className="absolute left-[10%] top-[88px] -translate-y-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
+              <div className="w-9 h-9 bg-primary text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                <User size={16} />
               </div>
-              <span className="text-xs font-600 text-primary bg-white px-1.5 py-0.5 rounded shadow-sm">
+              <span className="text-xs font-700 text-primary bg-white px-2 py-0.5 rounded shadow-sm border border-primary/10">
                 {t('သင်', 'You')}
               </span>
             </div>
 
             {/* Repair shop pin */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center shadow-md">
-                <Wrench size={14} className="text-white" />
+            <div className="absolute left-[86%] top-[88px] -translate-y-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
+              <div className="w-9 h-9 bg-secondary text-white rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                <Wrench size={16} className="text-white" />
               </div>
-              <span className="text-xs font-600 text-secondary bg-white px-1.5 py-0.5 rounded shadow-sm">
+              <span className="text-xs font-700 text-secondary bg-white px-2 py-0.5 rounded shadow-sm border border-secondary/10">
                 {t('ဆိုင်', 'Shop')}
               </span>
             </div>
 
             {/* Animated rider */}
-            <motion.div
-              className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center gap-1"
-              animate={{ left: `${riderPos}%` }}
-              transition={{ duration: 1.2, ease: 'easeInOut' }}
-            >
-              <div className="w-9 h-9 bg-warning rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                <Bike size={16} className="text-white" />
-              </div>
-              <span className="text-xs font-700 text-warning bg-white px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">
-                {DEMO_RIDER.name.split(' ')[0]}
-              </span>
-            </motion.div>
+            {(() => {
+              const startPct = 14;
+              const endPct = 82;
+              const currentPct = startPct + (riderPos / 100) * (endPct - startPct);
+              const riderY = 88 - Math.sin((riderPos / 100) * Math.PI) * 44;
 
-            {/* Map grid overlay */}
-            <div className="absolute inset-0 opacity-10"
-              style={{
-                backgroundImage: 'linear-gradient(#2A8C6E 1px, transparent 1px), linear-gradient(90deg, #2A8C6E 1px, transparent 1px)',
-                backgroundSize: '30px 30px'
-              }}
-            />
+              return (
+                <motion.div
+                  className="absolute -translate-y-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10"
+                  animate={{ left: `${currentPct}%`, top: `${riderY}px` }}
+                  transition={{ duration: 1.2, ease: 'easeInOut' }}
+                >
+                  <div className="w-10 h-10 bg-warning text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                    <Bike size={18} />
+                  </div>
+                  <span className="text-[10px] font-800 text-warning bg-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap border border-warning/20">
+                    {DEMO_RIDER.name.split(' ')[0]}
+                  </span>
+                </motion.div>
+              );
+            })()}
           </div>
 
-          {/* Rider info */}
-          <div className="mt-3 flex items-center gap-3 bg-muted/50 rounded-xl p-3">
-            <div className="w-10 h-10 gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-800 text-sm">
-                {DEMO_RIDER.name.split(' ').map(w => w[0]).join('').slice(0, 2)}
-              </span>
+          {/* Rider details card */}
+          <div className="mt-4 flex items-center gap-3 bg-card border border-border rounded-2xl p-3 shadow-sm">
+            <div className="w-11 h-11 bg-primary/10 text-primary rounded-full flex items-center justify-center flex-shrink-0 border border-primary/20">
+              <Bike size={20} />
             </div>
-            <div className="flex-1">
-              <p className="font-700 text-foreground text-sm">{DEMO_RIDER.name}</p>
-              <div className="flex items-center gap-2">
-                <Star size={11} className="text-warning fill-warning" />
-                <span className="text-xs text-muted-foreground font-500">{DEMO_RIDER.rating} · {DEMO_RIDER.vehicleType}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-muted-foreground font-700 uppercase tracking-wider leading-none mb-1">{t('ပို့ဆောင်ရေး ဝန်ထမ်း', 'Delivery Partner')}</p>
+              <p className="font-800 text-foreground text-sm truncate leading-tight">{DEMO_RIDER.name}</p>
+              <div className="flex items-center gap-1.5 mt-1 leading-none">
+                <div className="flex items-center gap-0.5 text-warning">
+                  <Star size={11} className="fill-current" />
+                  <span className="text-xs font-700">{DEMO_RIDER.rating}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground/60">•</span>
+                <span className="text-xs text-muted-foreground font-600">
+                  {t(DEMO_RIDER.vehicleType === 'motorcycle' ? 'ဆိုင်ကယ်' : DEMO_RIDER.vehicleType, DEMO_RIDER.vehicleType)}
+                </span>
               </div>
             </div>
-            <a href={`tel:${DEMO_RIDER.phone}`} className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center">
-              <Phone size={15} className="text-primary" />
+            <a 
+              href={`tel:${DEMO_RIDER.phone}`} 
+              className="w-10 h-10 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl flex items-center justify-center transition-all border border-primary/20"
+              title={t('ဖုန်းခေါ်ဆိုရန်', 'Call Rider')}
+            >
+              <Phone size={16} />
             </a>
           </div>
         </div>
