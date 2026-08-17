@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   CheckCircle2, Circle, Clock, MapPin, Star, Shield,
-  Bike, Wrench, Package, ChevronRight, Phone, ArrowRight
+  Bike, Wrench, Package, ChevronRight, Phone, ArrowRight,
+  RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { DEMO_RIDER, buildStagesAtStatus, TrackingStatus } from '@/lib/tracking-mock';
@@ -32,6 +33,8 @@ export default function RepairTrackerClient() {
   const [currentStatusIdx, setCurrentStatusIdx] = useState(1);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [riderPos, setRiderPos] = useState(20);
+  const [trackingId, setTrackingId] = useState('RPR-2024-042');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const currentStatus = STATUS_ORDER[currentStatusIdx];
   const stages = buildStagesAtStatus(currentStatus);
@@ -52,6 +55,34 @@ export default function RepairTrackerClient() {
 
   const isCompleted = currentStatus === 'completed';
 
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000);
+  };
+
+  const getOverallState = () => {
+    if (currentStatus === 'pickup-confirmed') {
+      return {
+        label: t('ဆိုင်းငံ့ထားဆဲ', 'Pending'),
+        color: 'bg-warning/10 text-warning border-warning/30',
+      };
+    }
+    if (currentStatus === 'completed') {
+      return {
+        label: t('ပြီးဆုံးပြီ', 'Completed'),
+        color: 'bg-success/10 text-success border-success/30',
+      };
+    }
+    return {
+      label: t('လုပ်ဆောင်နေဆဲ', 'In Progress'),
+      color: 'bg-secondary/10 text-secondary border-secondary/30',
+    };
+  };
+
+  const overallState = getOverallState();
+
   return (
     <div className="min-h-screen px-4 md:px-10 lg:px-16 py-6 md:py-10">
       <div className="max-w-2xl mx-auto space-y-4">
@@ -63,15 +94,32 @@ export default function RepairTrackerClient() {
               {t('သင့်ပြင်ဆင်မှု', 'Your Repair')}
             </h1>
             <p className="text-sm text-muted-foreground font-500">
-              {t('တိုက်ရိုက် ခြေရာခံနေသည်', 'Live tracking')} · #RPR-2024-042
+              {t('တိုက်ရိုက် ခြေရာခံနေသည်', 'Live tracking')} · #{trackingId}
             </p>
           </div>
-          {!isCompleted && (
-            <div className="flex items-center gap-2 bg-success/10 text-success px-3 py-1.5 rounded-full text-xs font-700">
-              <span className="w-2 h-2 bg-success rounded-full animate-pulse" />
-              {t('တိုက်ရိုက်', 'Live')}
-            </div>
-          )}
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-700 border ${overallState.color}`}>
+            <span className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />
+            {overallState.label}
+          </div>
+        </div>
+
+        {/* Tracking ID Search Bar */}
+        <div className="flex gap-2 items-center bg-card border border-border rounded-2xl p-3 shadow-sm">
+          <input
+            type="text"
+            value={trackingId}
+            onChange={(e) => setTrackingId(e.target.value)}
+            placeholder={t('ခြေရာခံနံပါတ် ရိုက်ထည့်ပါ', 'Enter Tracking ID')}
+            className="flex-1 bg-muted border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-foreground font-600"
+          />
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="flex items-center justify-center p-2.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl transition-all disabled:opacity-50"
+            title={t('လန်းဆန်းစေရန်', 'Refresh Status')}
+          >
+            <RefreshCw size={15} className={`transition-transform duration-700 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
         </div>
 
         {/* Simulated Map */}
@@ -250,11 +298,35 @@ export default function RepairTrackerClient() {
                 {t('ပြင်ဆင်မှု အပ်ဒိတ်', 'Repair Update')}
               </p>
               <p className="text-sm font-600 text-foreground">
-                {t('မျက်နှာပြင် အစားထိုးနေသည်', 'Display replacement in progress')}
+                {currentStatusIdx === 4 ? t('မျက်နှာပြင် အစားထိုးနေသည်', 'Display replacement in progress') : 
+                 currentStatusIdx === 5 ? t('အရည်အသွေး စစ်ဆေးနေသည်', 'Quality testing in progress') :
+                 t('ပြင်ဆင်မှု အောင်မြင်စွာ ပြီးဆုံးပါပြီ', 'Repair successfully completed')}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {t('ခန့်မှန်းချိန် ၂ နာရီ', 'Estimated 2 hours')}
+              <p className="text-xs text-muted-foreground mt-0.5 mb-3">
+                {currentStatusIdx <= 5 ? t('ခန့်မှန်းချိန် ၂ နာရီ', 'Estimated 2 hours') : t('စစ်ဆေးချက် ပြီးဆုံး', 'Checked & Verified')}
               </p>
+
+              {/* Visual Before / During / After Proof */}
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <div className="bg-card rounded-lg p-2 border border-border text-center shadow-sm">
+                  <span className="text-[10px] font-700 text-muted-foreground uppercase">{t('မပြင်ခင်', 'Before')}</span>
+                  <div className="h-10 bg-error/10 border border-error/20 rounded flex items-center justify-center mt-1 text-xs text-error font-bold">
+                    {t('ကွဲအက်', 'Cracked')}
+                  </div>
+                </div>
+                <div className="bg-card rounded-lg p-2 border border-border text-center shadow-sm">
+                  <span className="text-[10px] font-700 text-warning uppercase">{t('ပြင်ဆင်ဆဲ', 'During')}</span>
+                  <div className={`h-10 rounded flex items-center justify-center mt-1 text-xs font-bold ${currentStatusIdx === 4 ? 'bg-warning/15 border border-warning/30 text-warning animate-pulse' : 'bg-success/10 border border-success/20 text-success'}`}>
+                    {currentStatusIdx > 4 ? t('✓ လုပ်ပြီး', '✓ Fixed') : t('ပြင်ဆင်ဆဲ', 'fixing')}
+                  </div>
+                </div>
+                <div className="bg-card rounded-lg p-2 border border-border text-center shadow-sm">
+                  <span className="text-[10px] font-700 text-success uppercase">{t('ပြင်ပြီး', 'After')}</span>
+                  <div className={`h-10 rounded flex items-center justify-center mt-1 text-xs font-bold ${currentStatusIdx >= 5 ? 'bg-success/15 border border-success/30 text-success' : 'bg-muted border border-border text-muted-foreground'}`}>
+                    {currentStatusIdx >= 5 ? t('✓ အသစ်', '✓ Pristine') : t('မစရသေး', 'Ready')}
+                  </div>
+                </div>
+              </div>
             </motion.div>
           )}
         </div>

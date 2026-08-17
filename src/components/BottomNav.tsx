@@ -3,18 +3,19 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ScanLine, MapPin, Award } from 'lucide-react';
+import { Home, ScanLine, MapPin, Award, User } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   const NAV_ITEMS = [
     { id: 'nav-home', label: language === 'my' ? 'ပင်မ' : 'Home', icon: Home, href: '/' },
     { id: 'nav-scan', label: language === 'my' ? 'စကင်' : 'Scan', icon: ScanLine, href: '/ai-diagnostic-screen', isAction: true },
     { id: 'nav-track', label: language === 'my' ? 'ခြေရာခံ' : 'Track', icon: MapPin, href: '/repair-tracker' },
     { id: 'nav-impact', label: language === 'my' ? 'သက်ရောက်မှု' : 'Impact', icon: Award, href: '/impact-complete' },
+    { id: 'nav-profile', label: language === 'my' ? 'ပရိုဖိုင်' : 'Profile', icon: User, href: '/profile' },
   ];
 
   return (
@@ -52,22 +53,6 @@ export default function BottomNav() {
             </Link>
           );
         })}
-
-        {/* Language toggle */}
-        <button
-          onClick={toggleLanguage}
-          className="nav-tab flex flex-col items-center gap-0.5"
-          aria-label="Toggle language"
-        >
-          <div className="w-8 h-8 rounded-full border-2 border-primary/40 flex items-center justify-center bg-primary/5">
-            <span className="text-xs font-800 text-primary leading-none">
-              {language === 'my' ? 'EN' : 'မြ'}
-            </span>
-          </div>
-          <span className="text-xs font-600 text-muted-foreground">
-            {language === 'my' ? 'Eng' : 'မြန်မာ'}
-          </span>
-        </button>
       </div>
     </nav>
   );

@@ -1,8 +1,12 @@
+'use client';
+
 import React from 'react';
 import { MapPin, Leaf, Wrench } from 'lucide-react';
 import { CITY_IMPACTS } from '@/lib/demo-data';
+import { useLanguage } from '@/lib/language-context';
 
 export default function CityImpactSection() {
+  const { t } = useLanguage();
   const maxCo2e = Math.max(...CITY_IMPACTS?.map(c => c?.co2eAvoidedKg));
 
   return (
@@ -11,22 +15,28 @@ export default function CityImpactSection() {
         <div className="flex flex-col lg:flex-row lg:gap-12 lg:items-start">
           {/* Left: Header */}
           <div className="lg:w-72 mb-8 lg:mb-0">
-            <p className="text-sm font-600 text-primary uppercase tracking-widest mb-2">လူထု သက်ရောက်မှု · Community Impact</p>
-            <h2 className="text-xl md:text-2xl font-700 text-foreground mb-1">
-              မြန်မာနိုင်ငံတစ်ဝှမ်း ပြင်ဆင်မှုများ
+            <p className="text-sm font-600 text-primary uppercase tracking-widest mb-2">
+              {t('လူထု သက်ရောက်မှု', 'Community Impact')}
+            </p>
+            <h2 className="text-xl md:text-2xl font-700 text-foreground mb-2">
+              {t('မြန်မာနိုင်ငံတစ်ဝှမ်း ပြင်ဆင်မှုများ', 'Repairing Across Myanmar')}
             </h2>
-            <p className="text-base text-primary/70 font-500 mb-3">Repair happening across Myanmar</p>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              REPARO လူထုမှ ပြင်ဆင်ထားသော ပစ္စည်းတိုင်းသည် မြန်မာနိုင်ငံ၏ ကာဗွန်ခြေရာကို လျော့ကျစေသည်။
+              {t(
+                'REPARO လူထုမှ ပြင်ဆင်ထားသော ပစ္စည်းတိုင်းသည် မြန်မာနိုင်ငံ၏ ကာဗွန်ခြေရာကို လျော့ကျစေသည်။',
+                'Every item repaired by the REPARO community directly prevents electronic waste and reduces carbon footprint.'
+              )}
             </p>
 
             <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-2xl">
               <div className="flex items-center gap-2 mb-2">
                 <Leaf size={16} className="text-primary" />
-                <p className="text-sm font-600 text-primary">စုစုပေါင်း · Community Total</p>
+                <p className="text-sm font-600 text-primary">{t('စုစုပေါင်း လျော့ကျမှု', 'Community Total')}</p>
               </div>
               <p className="text-2xl font-800 text-primary">25,740 kg</p>
-              <p className="text-xs text-muted-foreground font-500">မြို့အားလုံးတွင် CO₂e လျော့ကျမှု</p>
+              <p className="text-xs text-muted-foreground font-500">
+                {t('မြို့အားလုံးတွင် CO₂e လျော့ကျမှု', 'Total CO₂e avoided across cities')}
+              </p>
             </div>
           </div>
 
@@ -34,17 +44,24 @@ export default function CityImpactSection() {
           <div className="flex-1 space-y-4">
             {CITY_IMPACTS?.map((city) => {
               const pct = Math.round((city?.co2eAvoidedKg / maxCo2e) * 100);
+              const translatedCity = t(
+                city.city === 'Yangon' ? 'ရန်ကုန်' :
+                city.city === 'Mandalay' ? 'မန္တလေး' :
+                city.city === 'Naypyidaw' ? 'နေပြည်တော်' : 'မော်လမြိုင်',
+                city.city
+              );
+
               return (
                 <div key={`city-${city?.city}`} className="card-surface p-4 md:p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <MapPin size={14} className="text-primary" />
-                      <span className="font-600 text-foreground text-sm">{city?.city}</span>
+                      <span className="font-600 text-foreground text-sm">{translatedCity}</span>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground font-500">
                       <span className="flex items-center gap-1">
                         <Wrench size={11} className="text-primary" />
-                        {city?.repairsCompleted?.toLocaleString()} ကြိမ်
+                        {t(`${city?.repairsCompleted?.toLocaleString()} ကြိမ်`, `${city?.repairsCompleted?.toLocaleString()} repairs`)}
                       </span>
                       <span className="flex items-center gap-1 text-success font-600">
                         <Leaf size={11} />

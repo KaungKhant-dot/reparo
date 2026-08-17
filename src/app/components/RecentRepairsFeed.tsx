@@ -1,8 +1,9 @@
+'use client';
+
 import React from 'react';
 import { Wrench, Heart, RefreshCw, Clock, TrendingUp } from 'lucide-react';
 import { RECENT_REPAIRS } from '@/lib/demo-data';
-import Icon from '@/components/ui/AppIcon';
-
+import { useLanguage } from '@/lib/language-context';
 
 const REC_ICON: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   REPAIR: Wrench,
@@ -25,7 +26,16 @@ const REC_MYANMAR: Record<string, string> = {
   RESELL: 'ရောင်းချရန်',
 };
 
+const REC_ENGLISH: Record<string, string> = {
+  REPAIR: 'Repair',
+  DONATE: 'Donate',
+  RECYCLE: 'Recycle',
+  RESELL: 'Resell',
+};
+
 export default function RecentRepairsFeed() {
+  const { t } = useLanguage();
+
   return (
     <section className="px-5 md:px-10 lg:px-16 py-10 md:py-14 bg-card/60">
       <div className="max-w-screen-2xl mx-auto">
@@ -33,10 +43,13 @@ export default function RecentRepairsFeed() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              <p className="text-sm font-600 text-success uppercase tracking-widest">Live လုပ်ဆောင်မှု · Live Activity</p>
+              <p className="text-sm font-600 text-success uppercase tracking-widest">
+                {t('တိုက်ရိုက် လုပ်ဆောင်မှု', 'Live Activity')}
+              </p>
             </div>
-            <h2 className="text-xl md:text-2xl font-700 text-foreground">မြန်မာနိုင်ငံတစ်ဝှမ်း မကြာသေးမီ ပြင်ဆင်မှုများ</h2>
-            <p className="text-sm text-muted-foreground mt-1">Recent repairs across Myanmar</p>
+            <h2 className="text-xl md:text-2xl font-700 text-foreground">
+              {t('မြန်မာနိုင်ငံတစ်ဝှမ်း မကြာသေးမီ ပြင်ဆင်မှုများ', 'Recent Repairs Across Myanmar')}
+            </h2>
           </div>
         </div>
 
@@ -44,7 +57,7 @@ export default function RecentRepairsFeed() {
           {RECENT_REPAIRS.map((repair) => {
             const RepairIcon = REC_ICON[repair.recommendation] || Wrench;
             const colorClass = REC_COLORS[repair.recommendation] || REC_COLORS.REPAIR;
-            const mmLabel = REC_MYANMAR[repair.recommendation] || repair.recommendation;
+            const label = t(REC_MYANMAR[repair.recommendation] || repair.recommendation, REC_ENGLISH[repair.recommendation] || repair.recommendation);
 
             return (
               <div
@@ -61,17 +74,17 @@ export default function RecentRepairsFeed() {
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="font-600 text-foreground text-sm truncate">{repair.itemName}</p>
                     <span className={`text-xs font-600 px-2 py-0.5 rounded-full flex-shrink-0 ${colorClass}`}>
-                      {mmLabel}
+                      {label}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="font-500">{repair.userName}</span>
                     <span>·</span>
-                    <span>{repair.city}</span>
+                    <span>{t(repair.city === 'Yangon' ? 'ရန်ကုန်' : repair.city === 'Mandalay' ? 'မန္တလေး' : repair.city === 'Naypyidaw' ? 'နေပြည်တော်' : 'မော်လမြိုင်', repair.city)}</span>
                     <span>·</span>
                     <span className="flex items-center gap-1">
                       <Clock size={10} />
-                      {repair.timeAgo}
+                      {t(repair.timeAgo.replace('min ago', 'မိနစ်ခန့်က').replace('hr ago', 'နာရီခန့်က'), repair.timeAgo)}
                     </span>
                   </div>
                 </div>
@@ -79,7 +92,7 @@ export default function RecentRepairsFeed() {
                 {/* Savings */}
                 {repair.savedMMK > 0 && (
                   <div className="text-right flex-shrink-0">
-                    <p className="text-xs text-muted-foreground font-500">သက်သာငွေ</p>
+                    <p className="text-xs text-muted-foreground font-500">{t('သက်သာငွေ', 'Saved')}</p>
                     <p className="text-sm font-700 text-success">K {repair.savedMMK.toLocaleString()}</p>
                   </div>
                 )}
