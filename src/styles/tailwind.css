@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 :root {
   --background: #EEF7F3;
@@ -73,6 +73,32 @@
 
   .counter-animate {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  /* ── Pyidaungsu / Burmese-safe text utilities ──────────────────────────────
+   * Myanmar script requires generous leading to prevent vowel marks
+   * (ေ ာ ိ ု ာ်) from clipping above/below the baseline.
+   * overflow: visible ensures descenders/ascenders are never clipped.
+   * ────────────────────────────────────────────────────────────────────── */
+  .burmese-heading {
+    line-height: 1.75;
+    overflow: visible;
+    padding-top: 0.125em;
+    padding-bottom: 0.125em;
+  }
+
+  .burmese-body {
+    line-height: 1.85;
+    overflow: visible;
+    padding-top: 0.0625em;
+    padding-bottom: 0.0625em;
+  }
+
+  .burmese-caption {
+    line-height: 2.0;
+    overflow: visible;
+    display: inline-block;
   }
 
   .gradient-primary {
@@ -112,7 +138,7 @@
   }
 
   .bottom-nav-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 8px);
   }
 
   .blob-green {

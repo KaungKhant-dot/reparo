@@ -57,12 +57,12 @@ export default function CommunityStatsBar() {
       value: `${co2e.toLocaleString()} kg`,
       label: t('CO₂e လျော့ကျမှု', 'CO₂e Avoided'),
       color: 'text-success',
-      bg: 'bg-primary/10',
+      bg: 'bg-success/10',
     },
     {
       id: 'stat-savings',
       icon: Coins,
-      value: t('K ၉၈၆ မီလီယံ', 'K 986M'),
+      value: t('K ၉၈၆ မီ', 'K 986M'),
       label: t('ကြေးငွေ သက်သာမှု', 'Community Savings'),
       color: 'text-secondary',
       bg: 'bg-secondary/10',
@@ -71,29 +71,43 @@ export default function CommunityStatsBar() {
       id: 'stat-shops',
       icon: Store,
       value: shops.toString(),
-      label: t('ပြင်ဆင်ရေး မိတ်ဖက်များ', 'Repair Partners'),
+      label: t('ပြင်ဆင်ရေး မိတ်ဖက်', 'Repair Partners'),
       color: 'text-primary',
       bg: 'bg-primary/10',
     },
   ];
 
   return (
-    <section ref={ref} className="px-5 md:px-10 lg:px-16 py-6 md:py-8">
+    <section ref={ref} className="px-4 md:px-8 lg:px-12 py-4 md:py-6">
       <div className="max-w-screen-2xl mx-auto">
-        <div className="card-surface p-5 md:p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {stats.map((stat) => {
+        <div className="card-surface p-4 md:p-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+            {stats.map((stat, i) => {
               const StatIcon = stat.icon;
+              const isLast = i === stats.length - 1;
               return (
-                <div key={stat.id} className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center flex-shrink-0`}>
-                    <StatIcon size={18} className={stat.color} />
+                <React.Fragment key={stat.id}>
+                  <div className="flex items-center gap-2.5">
+                    {/* Icon badge */}
+                    <div
+                      className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center flex-shrink-0`}
+                    >
+                      <StatIcon size={17} strokeWidth={2} className={stat.color} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className={`counter-animate text-lg md:text-xl font-800 ${stat.color} tabular-nums leading-tight`}>
+                        {stat.value}
+                      </p>
+                      <p className="text-[10px] font-600 text-muted-foreground burmese-caption leading-snug mt-0.5">
+                        {stat.label}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className={`counter-animate text-xl md:text-2xl font-800 ${stat.color}`}>{stat.value}</p>
-                    <p className="text-xs font-600 text-foreground">{stat.label}</p>
-                  </div>
-                </div>
+                  {/* Vertical divider between columns on md+ */}
+                  {!isLast && (
+                    <div className="hidden md:block absolute" />
+                  )}
+                </React.Fragment>
               );
             })}
           </div>

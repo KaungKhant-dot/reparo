@@ -43,8 +43,8 @@ export default function AppLayout({ children, className = '' }: AppLayoutProps) 
           </button>
         </header>
 
-        {/* Scrollable Main Content Area */}
-        <main className={`flex-1 overflow-y-auto pb-24 ${className}`}>
+        {/* Scrollable Main Content Area — pb-28 ensures bottom nav never overlaps */}
+        <main className={`flex-1 overflow-y-auto pb-28 ${className}`}>
           {children}
         </main>
 
